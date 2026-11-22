@@ -199,9 +199,9 @@ $('#offerNo').onclick = async () => { $('#offer').classList.remove('on'); track(
 /** The expert answers the buyer's latest technical question from the notes, hands back, and the buyer reacts. */
 async function expertAnswer(how: 'asked' | 'offer' | 'button') {
   if (st.busy || !st.live) return;
-  st.busy = true; hush(); $('#offer').classList.remove('on');
+  st.busy = true; hush(); $('#offer').classList.remove('on'); $<HTMLButtonElement>('#bring').disabled = true;
   try {
-    await expertJoin(); setState('Thinking');
+    await expertJoin(); expertState('answering'); setState('Thinking');
     const question = st.pending || [...st.history].reverse().find((h) => h.who === 'buyer')?.text || '';
     const r = await fetch('api/expert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ call: callBody(), question }) });
     const a: Answer = await r.json(); if (!r.ok || a.error) { showSaid('you', a.error || 'The expert could not answer.'); return; }
@@ -215,7 +215,7 @@ async function expertAnswer(how: 'asked' | 'offer' | 'button') {
     await say('buyer', t.say);
     if (t.end) await endCall();
   } catch (e) { showSaid('you', (e as Error).message); }
-  finally { st.busy = false; if (st.live) setState('Your turn'); }
+  finally { st.busy = false; if (st.live) { setState('Your turn'); $<HTMLButtonElement>('#bring').disabled = false; } }
 }
 $('#bring').onclick = () => { track('bring_button'); void expertAnswer('button'); };
 
