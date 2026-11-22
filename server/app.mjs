@@ -16,6 +16,7 @@
 // The rules of the buyer and the expert are in brain.mjs.
 
 import { LANGS, BUYERS, DIFFICULTY, SAMPLE_PRODUCT, SAMPLE_NOTES, hearingHint, setupMessages, readSetup, buyerMessages, readBuyer, expertMessages, readExpert, scorecardMessages, readScorecard, voiceStyle } from './brain.mjs';
+import { elevenSpeech, elevenOf } from './voices.mjs';
 
 // Each buyer has a Spatius avatar and a matching OpenAI voice.
 export const FACES = {
@@ -36,6 +37,7 @@ export function settings(env) {
   const base = ownKey ? (env.OPENAI_BASE_URL && !isStarter(env.OPENAI_BASE_URL) ? env.OPENAI_BASE_URL : 'https://api.openai.com/v1') : starterUrl;
   return {
     apiKey: env.SPATIUS_API_KEY || '',
+    eleven: elevenOf(env), // ElevenLabs voices when ELEVENLABS_API_KEY is set
     appId: env.SPATIUS_APP_ID || '',
     region: env.SPATIUS_REGION || 'us-west',
     // where the page starts: the choices from the demo, or your own
@@ -164,6 +166,9 @@ async function speak(s, request) {
   const input = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 700);
   if (!input) return json(400, { error: 'Nothing to say.' });
   // response_format "pcm" is raw PCM16 mono at 24 kHz: exactly what the avatar takes, so it is passed on untouched
+  // ElevenLabs first when ELEVENLABS_API_KEY is set (each person has their own voice); the OpenAI voice if it is not set or says no
+  const el = await elevenSpeech(s.eleven, who === 'expert' ? EXPERT.avatarId : FACES[who].avatarId, input, lang);
+  if (el) return new Response(el.body, { status: 200, headers: { 'Content-Type': 'audio/pcm;rate=24000', 'Cache-Control': 'no-store' } });
   const res = await callOpenAI(s, '/audio/speech', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model: s.openai.tts, voice: who === 'expert' ? EXPERT.voice : FACES[who].voice, input, response_format: 'pcm', instructions: voiceStyle(who, lang) }),
