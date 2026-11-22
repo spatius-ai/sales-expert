@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bring in the expert</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/website.css">
+<style>
+  /* the page around the partner: centred, with room to breathe */
+  body { margin: 0; background: var(--lab-page, #F5F5F7); }
+  .page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 40px; }
+  .made { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 28px; color: var(--lab-muted, #6E7187); text-decoration: none; }
+  .made img { width: 18px; height: 18px; }
+  @media (max-width: 600px) { .page { padding: 16px 8px 28px; } }
+  /* inside another page (embed.js): that page already has its margins */
+  .framed body { background: transparent; } .framed .page { padding: 0; max-width: none; } .framed .made { margin-top: 16px; }
+</style>
+<script>if (window.parent !== window) document.documentElement.classList.add('framed');</script>
+<style>.below { grid-template-columns: repeat(2, minmax(0, 1fr)); }</style>
+</head>
+<body>
+<div class="spatius-website-theme page">
+<div class="block">
+  <div class="intro">
+    <div>
+      <span class="eyebrow hp-type-eyebrow">Technical sales practice</span>
+      <h1 class="hp-type-feature-lead">Bring in the expert</h1>
+      <p class="hp-type-body">A sales call with two avatars. When the buyer's questions get technical, bring in your solutions engineer, or let her offer when your answer is weak. She answers from your technical notes and hands back to you.</p>
+    </div>
+    <div class="row"><button class="btn btn-brand hp-type-action" id="start" type="button">Start the call</button></div>
+  </div>
+
+  <div class="card room">
+    <div class="setup">
+      <span class="lbl hp-type-label">Buyer</span>
+      <div class="pills hp-type-label" id="buyers"><button data-buyer="it" aria-pressed="true"><img src="assets/nadia.webp" alt="">Head of IT</button><button data-buyer="finance" aria-pressed="false"><img src="assets/sr/victor-still.webp" alt="">Finance director</button><button data-buyer="owner" aria-pressed="false"><img src="assets/face.jpg" alt="">Business owner</button></div>
+      <span class="lbl hp-type-label">Difficulty</span>
+      <div class="pills hp-type-label" id="levels"><button data-difficulty="easy" aria-pressed="false">Easy</button><button data-difficulty="realistic" aria-pressed="true">Realistic</button><button data-difficulty="tough" aria-pressed="false">Tough</button></div>
+      <span class="lbl hp-type-label">Language</span>
+      <div class="pills hp-type-label" id="langs"><button data-lang="en" aria-pressed="true">English</button><button data-lang="es" aria-pressed="false">Español</button><button data-lang="zh" aria-pressed="false">中文</button><button data-lang="ar" aria-pressed="false">العربية</button><button data-lang="fr" aria-pressed="false">Français</button></div>
+    </div>
+    <div class="product">
+      <span class="lbl hp-type-label">You sell</span>
+      <span class="name hp-type-label" id="productName"><b>ShiftPilot</b> · staff scheduling for restaurants, with technical notes (sample)</span>
+      <button class="btn btn-secondary hp-type-action" id="ownBtn" type="button">Use your own product</button>
+      <button class="info-btn" type="button" aria-expanded="false" aria-controls="i-product" aria-label="About the product and notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+    </div>
+    <div class="info-box hp-type-card-copy" id="i-product" hidden style="margin-top:12px">
+      <p><b>The sample:</b> ShiftPilot, staff scheduling software for restaurants, with technical notes: integrations, sign-in, security, where data is kept, uptime and API. Made up for practice.</p>
+      <p><b>The expert answers only from the technical notes.</b> If the notes do not cover a question, she says so and offers to follow up in writing; she never guesses.</p>
+    </div>
+    <div class="own" id="own" hidden>
+      <label for="ownText">What you sell</label>
+      <textarea id="ownText" placeholder="What you sell, who it is for, and what it costs."></textarea>
+      <label for="ownNotes">Technical notes for the expert</label>
+      <textarea id="ownNotes" placeholder="Security, sign-in, integrations, where data is kept, uptime, API… one fact per line."></textarea>
+      <p class="hp-type-label">The next call uses these. Leave them empty to go back to the sample.</p>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="tiles" id="tiles">
+        <div class="tile buyer" id="buyerTile">
+          <img class="bg" src="assets/sr/office.webp" alt="">
+          <div class="avatar" id="buyerBox"><img class="still" id="buyerStill" src="assets/nadia.webp" alt="The buyer"><div id="buyerAvatar"></div></div>
+          <img class="front" src="assets/sr/office.webp" alt="" aria-hidden="true">
+          <span class="status hp-type-mono"><i></i><span id="state">Ready</span></span>
+          <span class="load" id="buyerLoad">The buyer is joining…</span>
+          <span class="tag" id="buyerTag">Nadia · Head of IT</span>
+        </div>
+        <div class="tile expert" id="expertTile">
+          <img class="bg" src="assets/sr/expert-room.webp" alt="">
+          <div class="avatar" id="expertBox"><img class="still" src="assets/grace.webp" alt="Your expert"><div id="expertAvatar"></div></div>
+          <span class="badge">Expert joined</span>
+          <span class="load" id="expertLoad">Grace is joining…</span>
+          <span class="tag">Grace · Solutions engineer</span>
+          <div class="offer" id="offer"><p dir="auto" id="offerText">Want me to take that one?</p><div class="row"><button class="btn btn-brand hp-type-action" id="offerYes" type="button">Yes, take it</button><button class="btn btn-secondary hp-type-action" id="offerNo" type="button">I have got it</button></div></div>
+        </div>
+        <span class="clock hp-type-mono" id="clock">03:00</span>
+        <div class="subs" aria-live="polite"><span class="who" id="who">Nadia · Head of IT</span><span class="line" dir="auto" id="said">Press Start the call. When it gets technical, bring in the expert.</span></div>
+      </div>
+      <div class="panel" aria-label="How the call is going">
+        <div class="meter">
+          <div class="top"><span class="k">Interest</span><span class="num" id="num">40<small>/100</small></span></div>
+          <div class="bar"><i id="dot" style="left:40%"></i></div>
+          <div class="why" id="why"><span class="delta same">Start</span><span>It moves with every answer.</span></div>
+        </div>
+        <div class="expert-card">
+          <img src="assets/grace.webp" alt="">
+          <div><b>Grace</b><span id="expertState">Solutions engineer · on standby</span></div>
+          <button class="btn hp-type-action" id="bring" type="button" disabled>Bring in</button>
+          <button class="info-btn" type="button" aria-expanded="false" aria-controls="i-expert" aria-label="About the expert" style="color:#B8B3D6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+        </div>
+        <div class="info-box hp-type-card-copy" id="i-expert" hidden style="margin:0">
+          <p><b>Bring in the expert:</b> press "Bring in", or say "let me bring in our engineer". Grace joins the call, answers the buyer's latest technical question from the technical notes, and hands back to you.</p>
+          <p><b>She also offers:</b> when your answer to a technical question is vague or wrong, she joins and asks "Want me to take that one?". You choose.</p>
+        </div>
+        <div><span class="k">Technical questions</span><div class="tq" id="tq"><span class="none hp-type-label">None yet</span></div></div>
+        <div><span class="k">Objections raised</span><div class="objs" id="objs"><span class="none hp-type-label">None yet</span></div></div>
+        <div><span class="k">What you know</span><p class="know" id="know">Start the call to meet the buyer.</p></div>
+      </div>
+      <div class="score" id="score" role="dialog" aria-labelledby="scoreTitle">
+        <div class="box" id="scoreBox"><p class="wait hp-type-card-copy">Scoring your call…</p></div>
+      </div>
+    </div>
+
+    <form class="dock" id="ask">
+      <button class="mic" id="mic" type="button" aria-label="Speak" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg></button>
+      <label class="field"><input id="q" autocomplete="off" placeholder="Talk to the buyer, or type…" aria-label="What you say"><button class="send" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></label>
+      <button class="btn btn-end hp-type-action" id="end" type="button" style="height:44px">End the call</button>
+    </form>
+  </div>
+
+  <div class="below">
+    <div class="card">
+      <span class="label-mono hp-type-mono">How it works</span>
+      <ol class="steps hp-type-card-copy">
+        <li><span class="n hp-type-mono">01</span><span>Pick a buyer and what you sell, with its technical notes.</span></li>
+        <li><span class="n hp-type-mono">02</span><span>Talk. The buyer asks technical questions, and the meter moves with every answer.</span></li>
+        <li><span class="n hp-type-mono">03</span><span>Bring in the expert, or let her offer when your answer is weak.</span></li>
+        <li><span class="n hp-type-mono">04</span><span>End the call for your scorecard, including how well you used the expert.</span></li>
+      </ol>
+    </div>
+    <div class="card">
+      <span class="label-mono hp-type-mono">A tip</span>
+      <p class="tip hp-type-card-copy">Do not guess at technical answers. A clear "let me bring in our engineer" builds more trust than a vague answer, and the buyer's interest shows it.</p>
+    </div>
+  </div>
+</div>
+<a class="made hp-type-label" href="https://www.spatius.ai" target="_blank" rel="noopener"><img src="assets/spatius-mark.svg" alt="">Made with Spatius avatars</a>
+</div>
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

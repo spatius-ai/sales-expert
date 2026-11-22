@@ -1,0 +1,14 @@
+// Cloudflare Workers settings for Bring in the expert. Used by "Deploy to Cloudflare" and by `npm run deploy`.
+{
+  "name": "sales-expert",
+  "main": "server/worker.mjs",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./dist", "binding": "ASSETS" },
+  "build": { "command": "npm run build" },
+  "vars": {
+    "SPATIUS_REGION": "us-west",
+    "EXPERT_BUYER": "it",
+    "EXPERT_DIFFICULTY": "realistic",
+    "EXPERT_LANG": "en"
+  }
+}
